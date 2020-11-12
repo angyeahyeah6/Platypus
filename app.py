@@ -72,7 +72,7 @@ def add_task():
     try:
         if Task.add_task(data):
             data = Task.get_self_uncheck_task(userId)
-            return Respond.return_success()
+            return Respond.return_success_with_data(data)
     except:
         return Respond.return_failed()
 
