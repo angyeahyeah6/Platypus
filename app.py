@@ -26,7 +26,7 @@ def login():
         return Respond.return_failed_with_msg("No userId")
     try:
         if User.login(userId):
-            return Respond.return_success_with_data(result_dict)
+            return Respond.return_success()
         else:
             return Respond.return_failed()
     except:
@@ -152,9 +152,7 @@ def get_accuracy():
         return Respond.return_failed_with_msg("No taskId or No userId")
     taskType = data.get(TASKTYPE)
     transId = data.get(TRANSACTIONID)
-    try:    
-        if taskId  == None or userId == None:
-            return Respond.return_failed_with_msg("No taskId or No userId")
+    try:
         if taskType == CLASSIFICATION:
             true_answer_list, pred_answer_list = Label.get_answer_pair(taskId, transId)
             accuracy = Evaluation.simple_accuracy(true_answer_list, pred_answer_list)

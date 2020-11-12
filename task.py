@@ -11,7 +11,7 @@ def get_all_task():
     return all_tasks
 def get_task_by_task_type(taskType):
     tasks = []
-    for t in db.Task.find({STATE: 1, TASKTYPE: taskType}):
+    for t in db.Task.find({STATE: 1, TASKTYPE: taskType}, {TASKID:1, TASKOWNERID:1, TASKOWNERNAME:1, TASKTITLE: 1, TASKTYPE: 1}):
         t.pop('_id', None)
         tasks.append(dict(t))
     return tasks
