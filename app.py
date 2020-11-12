@@ -171,7 +171,7 @@ def make_accuracy_response(accuracy, taskId, userId, taskType):
     return result
 
 if __name__ == '__main__':
-    app.run(host=Constant.IP, port=8000)
+    app.run(host=Constant.IP)
 
 # @app.route("/user", methods=['POST'])
 # def login():
