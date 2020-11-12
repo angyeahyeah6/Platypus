@@ -40,9 +40,11 @@ def create_new_level(userId):
 def add_already_label_list(userId, new_trans):
     try:
         doc = db.User.find_one({USERID: userId})
-        already_label_list = doc.get(ALREADYLABELLIST)
-        if already_label_list != None:
-            already_label_list += [t.get(ALREADYLABELLIST) for t in new_trans]
+        already_label_list = []
+        if doc.get(ALREADYLABELLIST) == None:
+            already_label_list = [t.get(LABELID) for t in new_trans]
+        else:
+            already_label_list = doc.get(ALREADYLABELLIST) + [t.get(LABELID) for t in new_trans]
         doc.update({ALREADYLABELLIST: already_label_list})
         db.User.replace_one({USERID: userId}, doc)
         return True

@@ -115,7 +115,6 @@ def get_lebel():
         taskId = data.get(TASKID)
         taskType = data.get(TASKTYPE)
         labelCount = data.get("labelCount")
-        page = data.get("page")
         if taskId == None:
             return Respond.return_failed_with_msg("No taskId")
         result_label = Label.get_label(userId, taskId, taskType, labelCount)
