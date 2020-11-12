@@ -1,15 +1,15 @@
-from flask import Flask, jsonify, request, redirect
-from flask import Flask
+from flask import Flask, jsonify, redirect, request
 from flask_cors import CORS
-import utils.constant as Constant
-import user.user as User
-import task as Task
-import utils.respond as Respond
-import user.level as Level
+
 import evaluation as Evaluation
-import label_type.question as Question
 import label as Label
+import label_type.question as Question
+import task as Task
+import user.level as Level
+import user.user as User
 from utils.constant import *
+import utils.respond as Respond
+
 # import ner as Ner
 
 app = Flask(__name__)
@@ -21,10 +21,11 @@ def main():
 @app.route("/user", methods=['POST'])
 def login():
     data = request.json
-    if data.get("userId") == None:
+    userId = data.get(USERID)
+    if userId == None:
         return Respond.return_failed_with_msg("No userId")
     try:
-        if User.login(data):
+        if User.login(userId):
             return Respond.return_success_with_data(result_dict)
         else:
             return Respond.return_failed()
@@ -34,12 +35,11 @@ def login():
 @app.route("/level", methods=['POST'])
 def get_level():
     data = request.json
-    if data.get(USERID) == None:
+    userId = data.get(USERID)
+    if userId == None:
         return Respond.return_failed_with_msg("No userId")
-    if not User.authenticate(data.get("userId")):
-        return Respond.return_failed_with_msg("No authenticate")
     try:
-        result_list = Level.get_user_all_level(data)
+        result_list = Level.get_user_all_level(userId)
         return Respond.return_success_with_data(result_list)
     except:
         return Respond.return_failed()
@@ -65,10 +65,10 @@ def tasks_by_task_type():
 @app.route("/task", methods=['POST'])
 def single_task():
     data = request.json
-    if data.get(TASKID) == None:
+    taskId = data.get(TASKID)
+    if taskId == None:
         return Respond.return_failed_with_msg("No taskId")
     try:
-        taskId = data.get(TASKID)
         result = Task.get_single_task(taskId)
         if result != None:
             return Respond.return_success_with_data(result)
@@ -84,6 +84,7 @@ def get_my_task():
         return Respond.return_success_with_data(Task.get_self_uncheck_task(userId))
     except:
         return Respond.return_failed()
+
 @app.route("/task/addTask", methods=['POST'])
 def add_task():
     data = request.json
@@ -98,25 +99,24 @@ def add_task():
 def get_question():
     try:
         data = request.json
-        userId = data.get(USERID)
         taskId = data.get(TASKID)
-        if userId == None or taskId == None:
-            return Respond.return_failed_with_msg("No taskId or No userId")
+        if taskId == None:
+            return Respond.return_failed_with_msg("No taskId")
         question_list = Question.get_question(taskId)
         return Respond.return_success_with_data(question_list)
     except:
         return Respond.return_failed()
+
 @app.route("/task/getLabel", methods=['POST'])
 def get_lebel():
     try:
         data = request.json
-        userId = data.get(USERID)
         taskId = data.get(TASKID)
         taskType = data.get(TASKTYPE)
         labelCount = data.get("labelCount")
         page = data.get("page")
-        if userId == None or taskId == None:
-            return Respond.return_failed_with_msg("No taskId or No userId")
+        if taskId == None:
+            return Respond.return_failed_with_msg("No taskId")
         result_label = Label.get_label(taskId, taskType, labelCount, page)
         if taskType == CLASSIFICATION:
             result = {TASKID: taskId, TASKTYPE: taskType, "labelList": result_label}
@@ -126,12 +126,15 @@ def get_lebel():
             return Respond.return_success_with_data(result)
     except:
         return Respond.return_failed()
-
+# not so good api
 @app.route("/saveAnswer", methods=['POST'])
 def saveAnser():
     data = request.json
     try:
         taskId = data.get(TASKID)
+        userId = data.get(USERID)
+        if taskId == None or userId == None:
+            return Respond.return_failed_with_msg("No taskId")
         result = Label.saveAnswer(data)
         if result != False:
             return Respond.return_success_with_data(result)
@@ -189,4 +192,4 @@ def make_accuracy_response(accuracy, taskId, userId, taskType):
     return result
 
 if __name__ == '__main__':
-    app.run(debug=True, host=Constant.IP, port=8000)
+    app.run(debug=True, host=IP, port=8000)

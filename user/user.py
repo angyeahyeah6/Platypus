@@ -1,14 +1,14 @@
 from db import db
 
-def login(data):
+def login(userId):
     try:
-        user_info = db.User.find_one({"userId": data.get("userId")})
+        user_info = db.User.find_one({"userId": userId})
         if user_info != None:
             user_info.pop('_id', None)
             return True
         else:
-            create_new_user(data.get("userId"))
-            create_new_level(data.get("userId"))
+            create_new_user(userId)
+            create_new_level(userId)
             return True
     except:
         return False
