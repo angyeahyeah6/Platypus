@@ -111,13 +111,14 @@ def get_question():
 def get_lebel():
     try:
         data = request.json
+        userId = data.get(USERID)
         taskId = data.get(TASKID)
         taskType = data.get(TASKTYPE)
         labelCount = data.get("labelCount")
         page = data.get("page")
         if taskId == None:
             return Respond.return_failed_with_msg("No taskId")
-        result_label = Label.get_label(taskId, taskType, labelCount, page)
+        result_label = Label.get_label(userId, taskId, taskType, labelCount)
         if taskType == CLASSIFICATION:
             result = {TASKID: taskId, TASKTYPE: taskType, "labelList": result_label}
             return Respond.return_success_with_data(result)

@@ -3,9 +3,11 @@ from utils.constant import *
 import uuid
 import label_type.classification as Classification
 import label_type.ner as Ner
+import user.user as User
+import math
 def saveAnswer(data):
     try:
-        # userId = data.get(USERID)
+        userId = data.get(USERID)
         taskType = data.get(TASKTYPE)
         if taskType == None:
             return False
@@ -15,11 +17,14 @@ def saveAnswer(data):
             # labelIdList = data.get(LABELIDLIST)
             transId, new_trans = Classification.to_transaction(data, transId)
             db.Transaction.insert_many(new_trans)
-            
+            if not User.add_already_label_list(userId, new_trans):
+                return False
         elif taskType == "ner":
             # labelId = data.get(LABELID)
             transId, new_trans = Ner.to_transaction(data, transId)
             db.Transaction.insert_one(new_trans)
+            if not User.add_already_label_list(userId, [new_trans]):
+                return False
         # update_already_label(transId, taskId, taskType, labelIdList)
         return {TRANSACTIONID:transId}
     except:
@@ -45,25 +50,25 @@ def update_already_label(transId, taskId, taskType, labelIdList):
             db.Label.replace_one({TASKID:taskId, LABELID:lb}, doc)
     return True
 
-def get_label(taskId, taskType, labelCount, page):
+def get_label(userId, taskId, taskType, labelCount):
+    already_label_list = User.get_already_label_list(userdId)
     if taskType == CLASSIFICATION:
-        unlabel = get_unlabel(taskId, taskType, labelCount, page)
-        example = get_example(taskId, taskType, labelCount, page)
-        if len(unlabel + example) > labelCount:
-            return unlabel[:-1] + example
-        return unlabel + example
+        example_cnt = math.ceil(labelCount/2)
+        example_label = get_label_from_db(taskId, taskType, example_cnt, already_label_list, True)
+        unlabel_cnt = (example_cnt - len(example_label)) + math.floor(labelCount/2)
+        return example_label + get_label_from_db(taskId, taskType, unlabel_cnt, already_label_list, False)
     elif taskType == NER:
-        return get_example(taskId, taskType, labelCount*2, page)[0]  
-def get_unlabel(taskId, taskType, labelCount, page):
+        return get_label_from_db(taskId, taskType, labelCount, already_label_list, example=True)
+
+def get_label_from_db(taskId, taskType, labelCount, already_label_list, example=True):
     return_ques = []
-    cursor = db.Label.find({TASKID: taskId, TASKTYPE:taskType, EXAMPLE:False})
-    cnt = 1
+    cursor = db.Label.find({TASKID: taskId, TASKTYPE:taskType, EXAMPLE:example})
     for l in cursor:
-        if cnt < page:
-            cnt += 1
+        if l.get(LABELID) in already_label_list:
             continue
-        if len(return_ques) >= int(labelCount/2)+1:
+        if labelCount == 0:
             break
+        labelCount -= 1
         if taskType == "classification":
             return_ques.append({LABELID: l.get(LABELID), IMAGEPATH: l.get(IMAGEPATH)})
         elif taskType == "ner":
@@ -71,22 +76,22 @@ def get_unlabel(taskId, taskType, labelCount, page):
             )})
     return return_ques
 
-def get_example(taskId, taskType, labelCount, page):
-    return_ques = []
-    cursor = db.Label.find({TASKID: taskId, TASKTYPE:taskType, EXAMPLE:True})
-    cnt = 1
-    for l in cursor:
-        if cnt < page:
-            cnt += 1
-            continue
-        if len(return_ques) >= int(labelCount/2)+1:
-            break
-        if taskType == "classification":
-            return_ques.append({LABELID: l.get(LABELID), IMAGEPATH: l.get(IMAGEPATH)})
-        elif taskType == "ner":
-            return_ques.append({LABELID: l.get(LABELID), TARGETPARAGRAPH: l.get(TARGETPARAGRAPH
-            )})
-    return return_ques
+# def get_example(taskId, taskType, labelCount, page):
+#     return_ques = []
+#     cursor = db.Label.find({TASKID: taskId, TASKTYPE:taskType, EXAMPLE:True})
+#     cnt = 1
+#     for l in cursor:
+#         if cnt < page:
+#             cnt += 1
+#             continue
+#         if len(return_ques) >= int(labelCount/2)+1:
+#             break
+#         if taskType == "classification":
+#             return_ques.append({LABELID: l.get(LABELID), IMAGEPATH: l.get(IMAGEPATH)})
+#         elif taskType == "ner":
+#             return_ques.append({LABELID: l.get(LABELID), TARGETPARAGRAPH: l.get(TARGETPARAGRAPH
+#             )})
+#     return return_ques
 
 def add_example_data(taskId, taskType, data):
     new_label={
