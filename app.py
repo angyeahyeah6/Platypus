@@ -78,7 +78,7 @@ def single_task():
         return Respond.return_failed()
 @app.route("/task/getMyTask", methods=['POST'])
 def get_my_task():
-    data.request.json
+    data = request.json
     userId = data.get(USERID)
     try:
         return Respond.return_success_with_data(Task.get_self_uncheck_task(userId))

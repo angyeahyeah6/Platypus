@@ -26,7 +26,7 @@ def get_single_task(taskId):
         return single_task
 def get_self_uncheck_task(userId):
     tasks = []
-    for t in db.Task.find({TASKOWNERID: userId, STATE: 1}):
+    for t in db.Task.find({TASKOWNERID: userId, STATE: 0}):
         t.pop('_id', None)
         tasks.append(dict(t))
     return tasks
