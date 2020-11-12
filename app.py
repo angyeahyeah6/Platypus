@@ -64,14 +64,20 @@ def single_task():
             return Respond.return_failed()
     except:
         return Respond.return_failed()
-
+@app.route("task/getMyTask", methods=['POST'])
+def get_my_task():
+    data.request.json
+    userId = data.get(USERID)
+    try:
+        return Respond.return_success_with_data(Task.get_self_uncheck_task(userId))
+    except:
+        return Respond.return_failed()
 @app.route("/task/addTask", methods=['POST'])
 def add_task():
     data = request.json
     userId = data.get(TASKOWNERID)
     try:
         if Task.add_task(data):
-            data = Task.get_self_uncheck_task(userId)
             return Respond.return_success_with_data(data)
     except:
         return Respond.return_failed()
