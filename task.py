@@ -45,7 +45,7 @@ def add_task(data):
             "description": data.get("description"),
             "rating": 5,
             "ratingPeople": 0,
-            STATE: 1,
+            STATE: 0,
             "examplePic": data.get("examplePic"),
             "taskIcon": data.get("taskIcon")
         }
