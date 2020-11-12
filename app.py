@@ -18,6 +18,18 @@ CORS(app)
 @app.route('/')
 def main():
     return "finished"
+@app.route("/user", methods=['POST'])
+def login():
+    data = request.json
+    if data.get("userId") == None:
+        return Respond.return_failed_with_msg("No userId")
+    try:
+        if User.login(data):
+            return Respond.return_success_with_data(result_dict)
+        else:
+            return Respond.return_failed()
+    except:
+        return Respond.return_failed()
 
 @app.route("/level", methods=['POST'])
 def get_level():
@@ -178,14 +190,3 @@ def make_accuracy_response(accuracy, taskId, userId, taskType):
 
 if __name__ == '__main__':
     app.run(debug=True, host=Constant.IP, port=8000)
-
-# @app.route("/user", methods=['POST'])
-# def login():
-#     data = request.json
-#     if data.get("userId") == None:
-#         return Respond.return_failed_with_msg("No userId")
-#     try:
-#         result_dict = User.login(data)
-#         return Respond.return_success_with_data(result_dict)
-#     except:
-#         return Respond.return_failed()
