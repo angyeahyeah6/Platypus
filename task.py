@@ -5,7 +5,7 @@ import uuid
 from utils.constant import *
 def get_all_task():
     all_tasks = []
-    for task in db.Task.find({STATE: 1}):
+    for task in db.Task.find({STATE: 1},{TASKID:1, TASKOWNERID:1, TASKOWNERNAME:1, TASKTITLE: 1, TASKTYPE: 1}):
         task.pop('_id', None)
         all_tasks.append(dict(task))
     return all_tasks
@@ -26,7 +26,7 @@ def get_single_task(taskId):
         return single_task
 def get_self_uncheck_task(userId):
     tasks = []
-    for t in db.Task.find({TASKOWNERID: userId, STATE: 0}):
+    for t in db.Task.find({TASKOWNERID: userId, STATE: 0},{"taskIcon": 1, TASKID: 1, TASKTITLE:1, TASKTYPE:1, STATE:1}):
         t.pop('_id', None)
         tasks.append(dict(t))
     return tasks
