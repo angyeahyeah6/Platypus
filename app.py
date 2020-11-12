@@ -64,7 +64,7 @@ def single_task():
             return Respond.return_failed()
     except:
         return Respond.return_failed()
-@app.route("task/getMyTask", methods=['POST'])
+@app.route("/task/getMyTask", methods=['POST'])
 def get_my_task():
     data.request.json
     userId = data.get(USERID)
