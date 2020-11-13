@@ -32,7 +32,7 @@ def create_new_level(userId):
     for c in ["classification", "ner"]:
         db.Level.insert_one({
             "userId": userId,
-            "type": c,
+            "taskType": c,
             "level": 0,
             "levelPercentage": 10
         })

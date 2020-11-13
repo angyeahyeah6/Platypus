@@ -155,11 +155,14 @@ def get_accuracy():
     try:
         if taskType == CLASSIFICATION:
             true_answer_list, pred_answer_list = Label.get_answer_pair(taskId, transId)
+            
             accuracy = Evaluation.simple_accuracy(true_answer_list, pred_answer_list)
         elif taskType == NER:
             true_answer_list, pred_answer_list = Label.get_answer_pair(taskId, transId)
+            print(true_answer_list)
             accuracy = Evaluation.blue_accuracy(true_answer_list, pred_answer_list)
         result = make_accuracy_response(accuracy, taskId, userId, taskType)
+        print(result)
         return Respond.return_success_with_data(result)
     except:
         return Respond.return_failed()
@@ -179,6 +182,7 @@ def add_rating():
 def make_accuracy_response(accuracy, taskId, userId, taskType):
     task_info = Task.get_single_task(taskId)
     level_info = Level.get_user_single_level(userId, taskType)
+    print(level_info)
     result = {
     TASKID: taskId, 
     TASKTITLE: task_info.get(TASKTITLE),
