@@ -9,6 +9,7 @@ import user.level as Level
 import user.user as User
 from utils.constant import *
 import utils.respond as Respond
+import user.level as Level
 
 # import ner as Ner
 
@@ -180,15 +181,17 @@ def add_rating():
 def make_accuracy_response(accuracy, taskId, userId, taskType):
     task_info = Task.get_single_task(taskId)
     level_info = Level.get_user_single_level(userId, taskType)
-    result = {
-    TASKID: taskId, 
-    TASKTITLE: task_info.get(TASKTITLE),
-    TASKTYPE: task_info.get(TASKTYPE),
-    "taskExpValue": 20,
-    "levelPercentage": 30,
-    "userLevel": level_info.get("level"),
-    "accuracy": accuracy}
-    return result
+    level_result = Level.up_level(userId, taskType, level_info, int(20*accuracy))
+    if level_result != False:
+        result = {
+        TASKID: taskId, 
+        TASKTITLE: task_info.get(TASKTITLE),
+        TASKTYPE: task_info.get(TASKTYPE),
+        "taskExpValue": level_result.get("levelPercentage"),
+        "levelPercentage": 30,
+        "userLevel": level_result.get("level"),
+        "accuracy": accuracy}
+        return result
 
 if __name__ == '__main__':
     app.run(debug=True, host=IP, port=8000)

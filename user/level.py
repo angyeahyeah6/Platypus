@@ -14,3 +14,18 @@ def get_user_all_level(userId):
 
 def get_user_single_level(userId, taskType):
     return db.Level.find_one({USERID: userId, TASKTYPE: taskType})
+
+def up_level(userId, taskType, level_info, points):
+    try:
+        level_percentage = level_info.get("levelPercentage")
+        level = level_info.get("level")
+        if level_percentage + points > 100:
+            level += 1
+            level_percentage  = level_percentage + points - 100
+        level_info.update({"levelPercentage": level_percentage, "level": level})
+        db.Level.replace_one({USERID: userId, TASKTYPE: taskType}, level_info)
+        doc = db.Level.find_one({USERID: userId, TASKTYPE: taskType})
+        return doc
+    except:
+        return False
+
