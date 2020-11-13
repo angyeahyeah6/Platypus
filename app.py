@@ -187,8 +187,8 @@ def make_accuracy_response(accuracy, taskId, userId, taskType):
         TASKID: taskId, 
         TASKTITLE: task_info.get(TASKTITLE),
         TASKTYPE: task_info.get(TASKTYPE),
-        "taskExpValue": level_result.get("levelPercentage"),
-        "levelPercentage": 30,
+        "taskExpValue": int(20*accuracy),
+        "levelPercentage": level_result.get("levelPercentage"),
         "userLevel": level_result.get("level"),
         "accuracy": accuracy}
         return result
