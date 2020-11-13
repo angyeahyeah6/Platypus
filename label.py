@@ -63,7 +63,14 @@ def get_label(userId, taskId, taskType, labelCount):
 
 def get_label_from_db(taskId, taskType, labelCount, already_label_list, example=True):
     return_ques = []
-    cursor = db.Label.aggregate([{ "$match": {TASKID: taskId, TASKTYPE:taskType, EXAMPLE:example} }, { "$sample": { "size": labelCount*2 } }])
+    if example == True:
+        question_list = db.Question.find_one({"taskId": taskId}).get("questionList")
+        cursor = db.Label.aggregate([{ 
+            "$match": 
+            {"$or": [{TASKID: taskId, TASKTYPE:taskType, EXAMPLE:example, TRUEANSWER:question_list[0]}, {TASKID: taskId, TASKTYPE:taskType, EXAMPLE:example, TRUEANSWER: question_list[1]}]} }, 
+            { "$sample": { "size": labelCount*2 } }])
+    else:
+        cursor = db.Label.aggregate([{ "$match": {TASKID: taskId, TASKTYPE:taskType, EXAMPLE:example} }, { "$sample": { "size": labelCount*2 } }])
     for l in cursor:
         if l.get(LABELID) in already_label_list:
             continue
