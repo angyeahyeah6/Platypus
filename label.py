@@ -17,14 +17,14 @@ def saveAnswer(data):
             # labelIdList = data.get(LABELIDLIST)
             transId, new_trans = Classification.to_transaction(data, transId)
             db.Transaction.insert_many(new_trans)
-            # if not User.add_already_label_list(userId, new_trans):
-                # return False
+            if not User.add_already_label_list(userId, new_trans):
+                return False
         elif taskType == "ner":
             # labelId = data.get(LABELID)
             transId, new_trans = Ner.to_transaction(data, transId)
             db.Transaction.insert_one(new_trans)
-            # if not User.add_already_label_list(userId, [new_trans]):
-                # return False
+            if not User.add_already_label_list(userId, [new_trans]):
+                return False
         # update_already_label(transId, taskId, taskType, labelIdList)
         return {TRANSACTIONID:transId}
     except:
@@ -51,8 +51,8 @@ def update_already_label(transId, taskId, taskType, labelIdList):
     return True
 
 def get_label(userId, taskId, taskType, labelCount):
-    already_label_list = []
-    # already_label_list = User.get_already_label_list(userId)
+    # already_label_list = []
+    already_label_list = User.get_already_label_list(userId)
     if taskType == CLASSIFICATION:
         example_cnt = math.ceil(labelCount/2)
         example_label = get_label_from_db(taskId, taskType, example_cnt, already_label_list, True)
