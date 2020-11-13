@@ -88,7 +88,7 @@ def get_my_task():
 @app.route("/task/addTask", methods=['POST'])
 def add_task():
     data = request.json
-    userId = data.get(TASKOWNERID)
+    # userId = data.get(TASKOWNERID)
     try:
         if Task.add_task(data):
             return Respond.return_success_with_data(data)
