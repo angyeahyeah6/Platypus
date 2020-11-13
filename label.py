@@ -51,7 +51,8 @@ def update_already_label(transId, taskId, taskType, labelIdList):
     return True
 
 def get_label(userId, taskId, taskType, labelCount):
-    already_label_list = User.get_already_label_list(userId)
+    already_label_list = []
+    # already_label_list = User.get_already_label_list(userId)
     if taskType == CLASSIFICATION:
         example_cnt = math.ceil(labelCount/2)
         example_label = get_label_from_db(taskId, taskType, example_cnt, already_label_list, True)
