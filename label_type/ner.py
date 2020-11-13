@@ -30,30 +30,3 @@ def to_transaction(data, transId):
         PREDANSWER : data.get(NEROBJECT)
     }
     return transId, new_trans
-# def get_answer_pair(taskId, labelIdList, transId):
-#     answer_list = []
-#     for labelId in labelIdList:
-#         ans = db.Label.find_one({TASKID: taskId, LABELID: labelId})
-#         label = db.Transaction.find_one({TASKID: taskId, TRANSACTIONID: transId})
-#         answer_list.append((ans.get(TRUEANSWER), label.get(PREDANSWER)))
-#     return answer_list
-
-# def saveAnswer(data):
-#     try:
-#         userId = data.get(USERID)
-#         # taskId = data.get(TASKID)
-#         labelId = data.get(LABELID)
-        
-#         tmp_label = db.Ner.find_one({"labelId": labelId})
-#         tmp_label.update({PREDANSWER: data.get("NERObject"), ALREADYLABEL: True, LABELERID: userId})
-#         db.Ner.replace_one({"labelId": labelId},tmp_label)
-#         return True
-#     except:
-#         return False
-# def get_unlabel(taskId):
-#     document = db.Ner.find_one({TASKID: taskId, ALREADYLABEL:False})
-#     new_ner = {
-#         "labelId": document.get("labelId"), 
-#         "targetParagraph":document.get("targetParagraph")
-#     }
-#     return new_ner

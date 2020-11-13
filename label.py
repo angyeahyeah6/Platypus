@@ -96,7 +96,7 @@ def get_label_from_db(taskId, taskType, labelCount, already_label_list, example=
 
 def add_example_data(taskId, taskType, data):
     new_label={
-        "labelId": "labelId" + str(uuid.uuid4().hex[:8]),
+        "labelId": "labelId" + str(uuid.uuid4().hex[:16]),
         "taskId": taskId,
         "taskType": taskType,
         "trueAnswer": data.get("category"),

@@ -18,11 +18,7 @@ def login(userId):
             return True
     except:
         return False
-    
-# def authenticate(userId):
-#     if db.User.find_one({"userId": userId}) != None:
-#         return True
-#     return False
+        
 def create_new_user(userId):
     new_user = {
     "userId": userId,

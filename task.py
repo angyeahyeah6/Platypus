@@ -33,7 +33,7 @@ def get_self_uncheck_task(userId):
 def add_task(data):
     try:
         new_task={
-            TASKID: "taskId" + str(uuid.uuid4().hex[:8]),
+            TASKID: "taskId" + str(uuid.uuid4().hex[:16]),
             TASKTITLE: data.get(TASKTITLE),
             STARTDATE: data.get(STARTDATE),
             ENDDATE: data.get(ENDDATE),

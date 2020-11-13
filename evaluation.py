@@ -19,6 +19,6 @@ def blue_accuracy(true_answer_list, pred_answer_list):
             accuracy += rignt_num/all_num
             cnt += 1
     return accuracy/cnt
-        
+
 
     
