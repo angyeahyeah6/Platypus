@@ -1,5 +1,5 @@
-IP = "140.112.251.124"
-# IP = "127.0.0.1"
+# IP = "140.112.251.124"
+IP = "127.0.0.1"
 TASKID = "taskId"
 LABELERID = "labelerId"
 USERID = "userId"
