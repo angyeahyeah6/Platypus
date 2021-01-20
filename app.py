@@ -22,16 +22,19 @@ def main():
 @app.route("/user", methods=['POST'])
 def login():
     data = request.json
+    print(data)
     userId = data.get(USERID)
     if userId == None:
         return Respond.return_failed_with_msg("No userId")
-    try:
-        if User.login(userId):
-            return Respond.return_success()
-        else:
-            return Respond.return_failed()
-    except:
-        return Respond.return_failed()
+    # try:
+    if User.login(userId):
+        labeledInfo = User.get_user_info(userId)
+        print(labeledInfo)
+        return jsonify(labeledInfo)
+    else:
+        return Respond.return_failed_with_msg("Login fail")
+    # except:
+    #     return Respond.return_failed_with_msg("Login fail")
 
 @app.route("/level", methods=['POST'])
 def get_level():
@@ -49,7 +52,8 @@ def get_level():
 def tasks():
     try:
         result_dict = Task.get_all_task()
-        return Respond.return_success_with_data(result_dict)
+        return jsonify(result_dict)
+        # return Respond.return_success_with_data(result_dict)
     except:
         return Respond.return_failed()
 
@@ -104,7 +108,7 @@ def get_question():
         if taskId == None:
             return Respond.return_failed_with_msg("No taskId")
         question_list = Question.get_question(taskId)
-        return Respond.return_success_with_data(question_list)
+        return jsonify(question_list)
     except:
         return Respond.return_failed()
 
@@ -117,32 +121,34 @@ def get_lebel():
         taskType = data.get(TASKTYPE)
         labelCount = data.get("labelCount")
         if taskId == None:
-            return Respond.return_failed_with_msg("No taskId")
+            return jsonify("No taskId")
         result_label = Label.get_label(userId, taskId, taskType, labelCount)
         if taskType == CLASSIFICATION:
             result = {TASKID: taskId, TASKTYPE: taskType, "labelList": result_label}
-            return Respond.return_success_with_data(result)
+            print(result)
+            return jsonify(result)
         if taskType == NER:
             result = {TASKID: taskId, TASKTYPE: taskType, "label": result_label}
-            return Respond.return_success_with_data(result)
+            return jsonify(result)
     except:
         return Respond.return_failed()
 # not so good api
 @app.route("/saveAnswer", methods=['POST'])
 def saveAnser():
     data = request.json
-    try:
-        taskId = data.get(TASKID)
-        userId = data.get(USERID)
-        if taskId == None or userId == None:
-            return Respond.return_failed_with_msg("No taskId")
-        result = Label.saveAnswer(data)
-        if result != False:
-            return Respond.return_success_with_data(result)
-        else:
-            return Respond.return_failed()
-    except:
+    # try:
+    taskId = data.get(TASKID)
+    userId = data.get(USERID)
+    print("data = ", data)
+    if taskId == None or userId == None:
+        return Respond.return_failed_with_msg("No taskId")
+    result = Label.saveAnswer(data)
+    if result != False:
+        return jsonify(result)
+    else:
         return Respond.return_failed()
+    # except:
+    #     return Respond.return_failed()
 
 @app.route("/accuracy", methods=["POST"])
 def get_accuracy():
@@ -162,7 +168,7 @@ def get_accuracy():
             question_list = Question.get_question(taskId)
             accuracy = Evaluation.blue_accuracy(true_answer_list, pred_answer_list, question_list)
         result = make_accuracy_response(accuracy, taskId, userId, taskType)
-        return Respond.return_success_with_data(result)
+        return jsonify(result)
     except:
         return Respond.return_failed()
 @app.route("/task/rating", methods=["POST"])

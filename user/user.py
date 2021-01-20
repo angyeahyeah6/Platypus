@@ -1,6 +1,7 @@
 from db import db
 import os,sys,inspect
 import uuid
+import json
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parent_dir = os.path.dirname(current_dir)
 sys.path.insert(0, parent_dir)
@@ -52,3 +53,14 @@ def get_already_label_list(userId):
     if already_label_list == None:
         return []
     return already_label_list
+def get_user_info(userId):
+    labeled = get_already_label_list(userId)
+    info = {'MRC': 0, "NER": 0, "CLAS": 0}
+    for i in labeled:
+        if(i[0] == 'm'):
+            info['MRC'] += 1
+        elif(i[0] == 'l'):
+            info['CLAS'] += 1
+        if(i[0] == 'n'):
+            info['NER'] += 1
+    return info
